@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizStorm</title>
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: red;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            overflow: auto;
+        }
+
+        .container, .info-box {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            color: black;
+            text-align: center;
+        }
+
+        .category-buttons button, .answer-button, .restart-button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #1a365d;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
+        .category-buttons button:hover, .answer-button:hover, .restart-button:hover {
+            transform: scale(1.05);
+            background-color: #2c5282;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .answer-button {
+            text-align: left;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .correct {
+            background-color: #48bb78 !important;
+            color: white;
+        }
+
+        .wrong {
+            background-color: #f56565 !important;
+            color: white;
+        }
+
+        .restart-button {
+            background-color: #2b6cb0;
+            margin-top: 20px;
+        }
+
+        .restart-button:hover {
+            background-color: #3182ce;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .contact-box {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-top: 50px;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .contact-box p {
+            font-size: 16px;
+        }
+
+        .contact-box a {
+            color: darkblue;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        #quizstorm-logo {
+            width: 250px;
+            height: auto;
+            margin: 0 auto 20px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container" class="container">
+        <h2>Question</h2>
+        <p id="question">Select a subject to begin</p>
+        <p id="selected-subject">Selected Subject: None</p>
+        <div id="answers"></div>
+        <p id="score">Score: 0</p>
+        <p id="timer">Time left: 200</p>
+    </div>
+    
+    <div id="category-selection" class="container">
+        <svg id="quizstorm-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+          <!-- Background gradient -->
+          <defs>
+            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#6e00ff;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#00b8ff;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff5bac;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#ff9265;stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Futuristic background shape -->
+          <path d="M20,100 Q20,40 100,30 Q180,10 240,30 Q300,50 350,80 Q380,110 350,150 Q300,180 200,180 Q100,180 50,150 Q20,130 20,100" fill="url(#bgGradient)" />
+
+          <!-- Brain icon -->
+          <g transform="translate(65, 90) scale(0.15)" filter="url(#glow)">
+            <!-- Brain outline -->
+            <path d="M300,20 C210,20 120,60 120,150 C120,180 130,210 150,230 C140,250 130,280 130,300 C130,350 170,390 220,390 C250,390 270,380 290,360 C310,380 340,390 370,390 C420,390 460,350 460,300 C460,280 450,250 440,230 C460,210 470,180 470,150 C470,60 390,20 300,20 Z" fill="url(#brainGradient)" stroke="#ffffff" stroke-width="10" />
+            
+            <!-- Brain details -->
+            <path d="M250,80 C240,100 230,150 230,180 C230,200 240,220 250,230" fill="none" stroke="#ffffff" stroke-width="8" />
+            <path d="M350,80 C360,100 370,150 370,180 C370,200 360,220 350,230" fill="none" stroke="#ffffff" stroke-width="8" />
+            <path d="M300,80 L300,230" fill="none" stroke="#ffffff" stroke-width="8" />
+            <path d="M200,150 C220,140 240,140 260,150" fill="none" stroke="#ffffff" stroke-width="8" />
+            <path d="M340,150 C360,140 380,140 400,150" fill="none" stroke="#ffffff" stroke-width="8" />
+            <path d="M200,200 C220,210 240,210 260,200" fill="none" stroke="#ffffff" stroke-width="8" />
+            <path d="M340,200 C360,210 380,210 400,200" fill="none" stroke="#ffffff" stroke-width="8" />
+            <path d="M250,250 Q300,280 350,250" fill="none" stroke="#ffffff" stroke-width="8" />
+            
+            <!-- Lightning bolts connecting to brain -->
+            <path d="M200,300 L220,260 L200,270 L230,220" fill="none" stroke="#ffff00" stroke-width="8" />
+            <path d="M400,300 L380,260 L400,270 L370,220" fill="none" stroke="#ffff00" stroke-width="8" />
+          </g>
+
+          <!-- Sparks and particles -->
+          <circle cx="200" cy="60" r="3" fill="#ffffff" />
+          <circle cx="220" cy="40" r="2" fill="#ffffff" />
+          <circle cx="180" cy="50" r="2" fill="#ffffff" />
+          <circle cx="240" cy="70" r="4" fill="#ffffff" />
+          <circle cx="150" cy="60" r="3" fill="#ffffff" />
+          <circle cx="270" cy="50" r="2" fill="#ffffff" />
+          
+          <!-- Electric connections -->
+          <path d="M130,100 Q160,80 190,100" stroke="#00ffff" stroke-width="2" fill="none" />
+          <path d="M210,100 Q240,80 270,100" stroke="#00ffff" stroke-width="2" fill="none" />
+          <path d="M290,100 Q320,80 350,100" stroke="#00ffff" stroke-width="2" fill="none" />
+
+          <!-- Text: "QuizStorm" with futuristic styling -->
+          <text x="205" y="150" font-family="Arial, sans-serif" font-size="36" font-weight="bold" text-anchor="middle" fill="white" filter="url(#glow)">Quiz<tspan fill="#00ffff">Storm</tspan></text>
+        </svg>
+        <h2>Choose a Subject</h2>
+        <div class="category-buttons">
+            <button onclick="startQuiz('Math')">Math</button>
+            <button onclick="startQuiz('English')">English</button>
+            <button onclick="startQuiz('Biology')">Biology</button>
+            <button onclick="startQuiz('Physics')">Physics</button>
+            <button onclick="startQuiz('Chemistry')">Chemistry</button>
+            <button onclick="startQuiz('ICT')">ICT</button>
+            <button onclick="startQuiz('History')">History</button>
+            <button onclick="startQuiz('Business')">Business</button>
+        </div>
+    </div>
+
+    <div id="results-container" class="container" style="display: none;">
+        <h2>Quiz Results</h2>
+        <div id="results"></div>
+        <button class="restart-button" onclick="restartQuiz()">Restart Quiz</button>
+    </div>
+
+    <div class="info-box">
+        <h2>About Us</h2>
+        <p>QuizStorm is an interactive platform designed to make learning fun and engaging. Test your knowledge across different subjects!</p>
+    </div>
+
+    <div class="contact-box">
+        <h2>Contact Us</h2>
+        <p>If you have any questions, feel free to reach us through:</p>
+        <p>Email: <a href="mailto:support@quizstorm.com">support@quizstorm.com</a></p>
+        <p>Phone: <a href="tel:+1234567890">+1 234-567-890</a></p>
+    </div>
+
+    <script>
+        let questions = {
+            'Math': [
+                { q: '2 + 2 = ?', a: ['3', '4', '5', '6'], correct: 1 },
+                { q: '5 x 3 = ?', a: ['15', '10', '20', '25'], correct: 0 },
+                { q: '10 - 7 = ?', a: ['4', '2', '3', '1'], correct: 2 },
+                { q: '6 ÷ 2 = ?', a: ['3', '2', '1', '4'], correct: 0 },
+                { q: '7 + 3 = ?', a: ['10', '11', '12', '13'], correct: 0 },
+                { q: '8 - 5 = ?', a: ['4', '3', '2', '1'], correct: 1 },
+                { q: '12 ÷ 4 = ?', a: ['2', '3', '4', '5'], correct: 1 },
+                { q: '9 x 1 = ?', a: ['10', '9', '8', '7'], correct: 1 },
+                { q: '5 + 6 = ?', a: ['11', '12', '13', '10'], correct: 0 },
+                { q: '15 ÷ 3 = ?', a: ['6', '5', '4', '3'], correct: 1 }
+            ],
+            'English': [
+                { q: 'What is the synonym of Happy?', a: ['Sad', 'Joyful', 'Angry', 'Tired'], correct: 1 },
+                { q: 'Choose the correct spelling:', a: ['Recieve', 'Receive', 'Receve', 'Receeve'], correct: 1 },
+                { q: 'What is a noun?', a: ['An action', 'A place', 'A person, place, or thing', 'A verb'], correct: 2 },
+                { q: 'Which of the following is an adjective?', a: ['Run', 'Jump', 'Blue', 'Cat'], correct: 2 },
+                { q: 'What is the past tense of "eat"?', a: ['Eating', 'Ate', 'Eaten', 'Eats'], correct: 1 },
+                { q: 'Which word is a conjunction?', a: ['Fast', 'And', 'Beautiful', 'Sleep'], correct: 1 },
+                { q: 'What is a pronoun?', a: ['I', 'Jump', 'Car', 'Dog'], correct: 0 },
+                { q: 'What is an antonym of "big"?', a: ['Large', 'Tiny', 'Huge', 'Tall'], correct: 1 },
+                { q: 'Choose the correct verb:', a: ['Running', 'Jumped', 'Books', 'Apen'], correct: 1 },
+                { q: 'What is the plural of "mouse"?', a: ['Mice', 'Mouses', 'Mouse', 'Mices'], correct: 0 }
+            ],
+            'Biology': [
+                { q: 'What is the powerhouse of the cell?', a: ['Nucleus', 'Mitochondria', 'Ribosomes', 'Endoplasmic Reticulum'], correct: 1 },
+                { q: 'What is the process by which plants make food?', a: ['Respiration', 'Photosynthesis', 'Fermentation', 'Digestion'], correct: 1 },
+                { q: 'What is the genetic material in living organisms?', a: ['RNA', 'DNA', 'Proteins', 'Enzymes'], correct: 1 },
+                { q: 'Which part of the plant absorbs water?', a: ['Leaf', 'Stem', 'Root', 'Flower'], correct: 2 },
+                { q: 'What is the basic unit of life?', a: ['Atom', 'Molecule', 'Cell', 'Tissue'], correct: 2 },
+                { q: 'Which organ filters waste from the blood?', a: ['Heart', 'Liver', 'Kidneys', 'Lungs'], correct: 2 },
+                { q: 'What is the process of cell division?', a: ['Mitosis', 'Meiosis', 'Binary Fission', 'Both A and B'], correct: 3 },
+                { q: 'What is the largest organ in the human body?', a: ['Heart', 'Brain', 'Skin', 'Liver'], correct: 2 },
+                { q: 'Which of the following is a unicellular organism?', a: ['Fungus', 'Bacterium', 'Fish', 'Mammal'], correct: 1 },
+                { q: 'Which blood cells are responsible for immunity?', a: ['Red Blood Cells', 'White Blood Cells', 'Platelets', 'Plasma'], correct: 1 }
+            ],
+            'Physics': [
+                { q: 'What is the unit of force?', a: ['Meter', 'Kilogram', 'Newton', 'Joule'], correct: 2 },
+                { q: 'Which of the following is a conductor of electricity?', a: ['Rubber', 'Wood', 'Iron', 'Glass'], correct: 2 },
+                { q: 'What is the speed of light?', a: ['3 x 10^8 m/s', '1 x 10^8 m/s', '5 x 10^8 m/s', '2 x 10^8 m/s'], correct: 0 },
+                { q: 'What does Newton\'s First Law state?', a: ['An object in motion stays in motion', 'F=ma', 'Energy is conserved', 'None of the above'], correct: 0 },
+                { q: 'What is the formula for work?', a: ['W = F x D', 'W = F x V', 'W = F x A', 'W = M x G'], correct: 0 },
+                { q: 'What is the unit of energy?', a: ['Joule', 'Watt', 'Newton', 'Volt'], correct: 0 },
+                { q: 'What is the law of conservation of energy?', a: ['Energy can be created and destroyed', 'Energy can only be transferred', 'Energy cannot be created or destroyed', 'Energy can only be destroyed'], correct: 2 },
+                { q: 'What type of energy is stored in food?', a: ['Kinetic Energy', 'Potential Energy', 'Chemical Energy', 'Heat Energy'], correct: 2 },
+                { q: 'What is the speed of sound?', a: ['343 m/s', '1000 m/s', '500 m/s', '1500 m/s'], correct: 0 },
+                { q: 'What is the force of gravity on Earth?', a: ['9.8 m/s^2', '10 m/s^2', '5 m/s^2', '15 m/s^2'], correct: 0 }
+            ],
+            'Chemistry': [
+                { q: 'What is the atomic number of carbon?', a: ['6', '8', '12', '14'], correct: 0 },
+                { q: 'Which element is most abundant in Earth\'s atmosphere?', a: ['Oxygen', 'Nitrogen', 'Hydrogen', 'Carbon'], correct: 1 },
+                { q: 'What is the formula for water?', a: ['H2O', 'CO2', 'O2', 'H2'], correct: 0 },
+                { q: 'Which is an example of a noble gas?', a: ['Oxygen', 'Hydrogen', 'Argon', 'Nitrogen'], correct: 2 },
+                { q: 'What is the pH of pure water?', a: ['0', '7', '14', '5'], correct: 1 },
+                { q: 'What type of bond is found in NaCl?', a: ['Ionic Bond', 'Covalent Bond', 'Hydrogen Bond', 'Metallic Bond'], correct: 0 },
+                { q: 'Which molecule is known as the building block of proteins?', a: ['Nucleotides', 'Amino Acids', 'Fatty Acids', 'Sugars'], correct: 1 },
+                { q: 'What is the process of turning a solid into a gas?', a: ['Condensation', 'Evaporation', 'Sublimation', 'Fusion'], correct: 2 },
+                { q: 'Which acid is found in the stomach?', a: ['Sulfuric Acid', 'Hydrochloric Acid', 'Nitric Acid', 'Acetic Acid'], correct: 1 },
+                { q: 'What is the main component of air?', a: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Argon'], correct: 2 }
+            ],
+            'ICT': [
+                { q: 'What does CPU stand for?', a: ['Central Processing Unit', 'Computer Processing Unit', 'Central Power Unit', 'Computer Power Unit'], correct: 0 },
+                { q: 'Which programming language is primarily used for web development?', a: ['C', 'JavaScript', 'Java', 'Python'], correct: 1 },
+                { q: 'Which of the following is an example of an operating system?', a: ['Windows', 'Chrome', 'Word', 'PowerPoint'], correct: 0 },
+                { q: 'What does HTTP stand for?', a: ['Hypertext Transfer Protocol', 'Hyper Tool Text Processor', 'Hyper Transfer Text Protocol', 'None of the above'], correct: 0 },
+                { q: 'Which device is used to input data into a computer?', a: ['Monitor', 'Printer', 'Keyboard', 'Speaker'], correct: 2 },
+                { q: 'Which of the following is an example of cloud storage?', a: ['Google Drive', 'USB Drive', 'Hard Drive', 'CD'], correct: 0 },
+                { q: 'What does RAM stand for?', a: ['Random Access Memory', 'Read Access Memory', 'Run Access Memory', 'Read All Memory'], correct: 0 },
+                { q: 'What is the smallest unit of data in a computer?', a: ['Byte', 'Bit', 'Kilobyte', 'Megabyte'], correct: 1 },
+                { q: 'Which of the following is a type of software?', a: ['Word Processor', 'Hard Drive', 'CPU', 'Monitor'], correct: 0 },
+                { q: 'Which is an example of a wireless network?', a: ['LAN', 'Wi-Fi', 'Ethernet', 'Bluetooth'], correct: 1 }
+            ],
+            'History': [
+                { q: 'Who was the first President of the United States?', a: ['Abraham Lincoln', 'George Washington', 'Thomas Jefferson', 'John Adams'], correct: 1 },
+                { q: 'In which year did World War I begin?', a: ['1910', '1914', '1920', '1939'], correct: 1 },
+                { q: 'Which empire was ruled by Julius Caesar?', a: ['Roman Empire', 'Ottoman Empire', 'Mongol Empire', 'Byzantine Empire'], correct: 0 },
+                { q: 'Who discovered America?', a: ['Christopher Columbus', 'Marco Polo', 'Leif Erikson', 'Ferdinand Magellan'], correct: 0 },
+                { q: 'Which event triggered the start of World War II?', a: ['Attack on Pearl Harbor', 'Assassination of Archduke Ferdinand', 'Invasion of Poland', 'Treaty of Versailles'], correct: 2 },
+                { q: 'Who was the leader of the Soviet Union during the Cuban Missile Crisis?', a: ['Joseph Stalin', 'Leonid Brezhnev', 'Mikhail Gorbachev', 'Nikita Khrushchev'], correct: 3 },
+                { q: 'Which war was fought between the North and South in the United States?', a: ['Civil War', 'Revolutionary War', 'World War I', 'World War II'], correct: 0 },
+                { q: 'Who was the last queen of France before the French Revolution?', a: ['Marie Antoinette', 'Catherine de Medici', 'Elizabeth I', 'Victoria'], correct: 0 },
+                { q: 'Which civilization built the pyramids of Giza?', a: ['Ancient Egypt', 'Ancient Greece', 'Ancient Rome', 'Maya'], correct: 0 },
+                { q: 'Who was the first human to journey into space?', a: ['Yuri Gagarin', 'Neil Armstrong', 'Buzz Aldrin', 'John Glenn'], correct: 0 }
+            ],
+            'Business': [
+                { q: 'What is the primary goal of a business?', a: ['Provide services', 'Generate profit', 'Create jobs', 'Reduce costs'], correct: 1 },
+                { q: 'Which of the following is an example of a liability for a business?', a: ['Revenue', 'Loan', 'Stock', 'Assets'], correct: 1 },
+                { q: 'What does ROI stand for in business?', a: ['Return on Investment', 'Revenue of Industry', 'Risk of Investment', 'Ratio of Income'], correct: 0 },
+                { q: 'What is an example of a fixed cost?', a: ['Rent', 'Raw materials', 'Wages', 'Utilities'], correct: 0 },
+                { q: 'Which financial statement shows a company\'s profitability?', a: ['Balance Sheet', 'Income Statement', 'Cash Flow Statement', 'Retained Earnings'], correct: 1 },
+                { q: 'What is market segmentation?', a: ['Dividing the market into different segments', 'Selling products at a higher price', 'Lowering the cost of production', 'Expanding the market'], correct: 0 },
+                { q: 'What is a brand?', a: ['A product name', 'A company logo', 'A type of advertisement', 'All of the above'], correct: 3 },
+                { q: 'What is SWOT analysis?', a: ['Strategy, Weaknesses, Opportunities, Threats', 'Strengths, Weaknesses, Opportunities, Threats', 'Strengths, Wins, Opportunities, Threats', 'Strategy, Wins, Opportunities, Threats'], correct: 1 },
+                { q: 'Which of the following is an example of equity financing?', a: ['Taking out a loan', 'Selling stock shares', 'Taking a mortgage', 'Using company profits'], correct: 1 },
+                { q: 'What is a business plan?', a: ['A document describing a business\'s goals', 'A financial document for taxes', 'A marketing plan', 'A job description'], correct: 0 }
+            ]
+        };
+
+        let selectedSubject = '';
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let score = 0;
+        let timer;
+
+        function startQuiz(subject) {
+            selectedSubject = subject;
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            score = 0;
+            document.getElementById('category-selection').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+            document.getElementById('selected-subject').textContent = 'Selected Subject: ' + subject;
+            document.getElementById('score').textContent = 'Score: 0';
+            showQuestion();
+            startTimer();
+        }
+
+        function showQuestion() {
+            const questionData = questions[selectedSubject][currentQuestionIndex];
+            document.getElementById('question').textContent = questionData.q;
+            const answersContainer = document.getElementById('answers');
+            answersContainer.innerHTML = '';
+            
+            questionData.a.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.className = 'answer-button';
+                button.onclick = () => checkAnswer(index);
+                answersContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(answerIndex) {
+            // Disable all buttons to prevent multiple answers
+            const buttons = document.querySelectorAll('.answer-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
+            
+            const correctIndex = questions[selectedSubject][currentQuestionIndex].correct;
+            if (answerIndex === correctIndex) {
+                score++;
+                document.getElementById('score').textContent = 'Score: ' + score;
+                userAnswers.push('Correct');
+                buttons[answerIndex].classList.add('correct');
+            } else {
+                userAnswers.push('Wrong');
+                buttons[answerIndex].classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+            }
+
+            // Move to the next question
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions[selectedSubject].length) {
+                    showQuestion();
+                } else {
+                    clearInterval(timer);
+                    endQuiz();
+                }
+            }, 1200);
+        }
+
+        function startTimer() {
+            let timeLeft = 200;
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = 'Time left: ' + timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function endQuiz() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('results-container').style.display = 'block';
+
+            let resultsHTML = `<h3>Score: ${score} out of ${questions[selectedSubject].length}</h3>`;
+            questions[selectedSubject].forEach((questionData, index) => {
+                const answerStatus = userAnswers[index] || "Not answered";
+                const answerClass = answerStatus === "Correct" ? "correct" : "wrong";
+                
+                resultsHTML += `<p>
+                    <strong>Question:</strong> ${questionData.q}<br>
+                    <span class="${answerClass}">Your answer: ${answerStatus}</span><br>
+                    <strong>Correct answer:</strong> ${questionData.a[questionData.correct]}
+                </p>`;
+            });
+            document.getElementById('results').innerHTML = resultsHTML;
+        }
+
+        function restartQuiz() {
+            document.getElementById('category-selection').style.display = 'block';
+            document.getElementById('results-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
